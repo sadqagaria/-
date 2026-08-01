@@ -1,0 +1,48 @@
+{
+  "name": "نبض القاهرة | Cairo Pulse",
+  "short_name": "Cairo Pulse",
+  "description": "ساعة وطقس بخلفية ديناميكية، أسعار العملات وأونصة الذهب، مواقيت الصلاة وأدوات يومية.",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "./index.html#home",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#07101f",
+  "theme_color": "#061329",
+  "categories": ["utilities", "finance", "weather", "lifestyle"],
+  "shortcuts": [
+    {
+      "name": "مواقيت الصلاة",
+      "short_name": "الصلاة",
+      "url": "./index.html#prayers",
+      "icons": [{"src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png"}]
+    },
+    {
+      "name": "سعر أونصة الذهب",
+      "short_name": "الذهب",
+      "url": "./index.html#goldDetailsCard",
+      "icons": [{"src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png"}]
+    },
+    {
+      "name": "الآلة الحاسبة",
+      "short_name": "الحاسبة",
+      "url": "./index.html#calculatorCard",
+      "icons": [{"src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png"}]
+    }
+  ],
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

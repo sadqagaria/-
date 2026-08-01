@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<meta content="#0b1324" name="theme-color"/>
+<meta content="نبض القاهرة: واجهة مختصرة تعرض الساعة والحرارة والصلاة القادمة والدولار وذهب عيار 21 والأونصة وطقس اليوم وموقع الوقت بين الصلوات." name="description"/>
+<title>نبض القاهرة | Cairo Pulse V7</title>
+<link href="manifest.webmanifest" rel="manifest"/>
+<link href="icons/icon-192.png" rel="icon" type="image/png"/>
+<link href="icons/icon-192.png" rel="apple-touch-icon"/>
+<link href="styles.css" rel="stylesheet"/>
+</head>
+<body>
+<div aria-hidden="true" class="dynamic-sky" id="dynamicSky">
+<div class="sky-stars"></div>
+<div class="sky-glow"></div>
+<div class="weather-effects" id="weatherEffects"></div>
+</div>
+<div class="app-shell">
+<header class="topbar">
+<a aria-label="العودة للرئيسية" class="brand-wrap brand-link" href="#home">
+<div aria-hidden="true" class="brand-mark">ق</div>
+<div>
+<h1 data-ar="نبض القاهرة" data-en="Cairo Pulse">نبض القاهرة</h1>
+<p class="main-interface-hidden" data-ar="جاري تحميل التاريخ…" data-en="Loading date…" id="headerDate">جاري تحميل التاريخ…</p>
+</div>
+</a>
+<div class="top-actions">
+<a aria-label="الإعدادات" class="icon-btn icon-link settings-only-button" href="#settings" title="الإعدادات">⚙</a>
+</div>
+</header>
+<nav aria-label="أزرار التفاصيل" class="detail-dock">
+<a class="dock-link active" data-route-link="home" href="#home"><span>⌂</span><small data-ar="الرئيسية" data-en="Home">الرئيسية</small></a>
+<a class="dock-link" data-route-link="weather" href="#weather"><span>☀</span><small data-ar="الطقس" data-en="Weather">الطقس</small></a>
+<a class="dock-link" data-route-link="currencyRatesCard" href="#currencyRatesCard"><span>$</span><small data-ar="الدولار" data-en="Dollar">الدولار</small></a>
+<a class="dock-link" data-route-link="goldDetailsCard" href="#goldDetailsCard"><span>◆</span><small data-ar="الذهب" data-en="Gold">الذهب</small></a>
+<a class="dock-link" data-route-link="prayers" href="#prayers"><span>☪</span><small data-ar="الصلاة" data-en="Prayer">الصلاة</small></a>
+<a class="dock-link" data-route-link="calculatorCard" href="#calculatorCard"><span>⌗</span><small data-ar="الحاسبة" data-en="Calculator">الحاسبة</small></a>
+</nav>
+<main>
+<section class="section-block home-dashboard page-view active-page minimal-home" id="home">
+<article class="card clock-card span-2" id="clockCard">
+<div class="card-head clock-head">
+<div><span class="eyebrow main-interface-hidden" data-ar="الوقت المحلي" data-en="Local time">الوقت المحلي</span><h2 data-ar="القاهرة" data-en="Cairo">القاهرة</h2></div>
+<div aria-label="Clock type" class="clock-mode-switch" role="group">
+<button class="mode-chip active" data-ar="عقارب" data-en="Analog" data-mode="analog" id="analogModeBtn" type="button">عقارب</button>
+<button class="mode-chip" data-ar="رقمية" data-en="Digital" data-mode="digital" id="digitalModeBtn" type="button">رقمية</button>
+</div>
+</div>
+<div class="clock-stage analog-active" id="clockStage">
+<div aria-label="ساعة عقارب" class="analog-clock classic" id="analogClock">
+<div class="clock-marks" id="clockMarks"></div>
+<div class="hand hour-hand" id="hourHand"></div>
+<div class="hand minute-hand" id="minuteHand"></div>
+<div class="hand second-hand" id="secondHand"></div>
+<div class="clock-pin"></div>
+</div>
+<div class="digital-wrap digital-segment" id="digitalClockPanel">
+<div class="digital-time" id="digitalTime">--:--:--</div>
+<div class="digital-period" data-ar="القاهرة" data-en="Cairo" id="digitalPeriod">القاهرة</div>
+</div>
+</div>
+<div class="date-ribbon main-interface-hidden">
+<div><span data-ar="التاريخ الميلادي" data-en="Gregorian date">التاريخ الميلادي</span><strong id="gregorianDate">--</strong></div>
+<div><span data-ar="التاريخ الهجري" data-en="Hijri date">التاريخ الهجري</span><strong id="hijriDate">--</strong></div>
+</div>
+</article>
+<article class="card current-status-card span-2" id="homeCurrentStatusCard">
+<div class="status-weather-pane">
+<div class="home-summary-icon status-weather-icon" id="homeWeatherIcon">☀️</div>
+<div>
+<span class="eyebrow" data-ar="الحالة الحالية" data-en="Current status">الحالة الحالية</span>
+<div class="status-temperature"><span class="big-value" id="homeTemp">--</span><span class="unit" data-ar="°م" data-en="°C">°م</span></div>
+<p data-ar="جاري تحميل الطقس…" data-en="Loading weather…" id="homeWeatherDesc">جاري تحميل الطقس…</p>
+<span class="status-location" data-ar="القاهرة" data-en="Cairo">القاهرة</span>
+</div>
+</div>
+<div aria-hidden="true" class="status-divider"></div>
+<div class="status-prayer-pane">
+<div class="status-prayer-copy">
+<span class="eyebrow" data-ar="الصلاة القادمة" data-en="Next prayer">الصلاة القادمة</span>
+<h2 id="homeNextPrayerName">—</h2>
+<div class="home-prayer-time" id="homeNextPrayerTime">--:--</div>
+<span class="remaining-label" data-ar="الوقت المتبقي" data-en="Time remaining">الوقت المتبقي</span>
+<strong class="home-prayer-countdown" id="homePrayerCountdown">--:--:--</strong>
+</div>
+<div aria-hidden="true" class="status-mosque-icon">☪</div>
+</div>
+<a aria-label="فتح تفاصيل الطقس" class="summary-open-btn status-details weather-details" href="#weather" title="فتح تفاصيل الطقس">↗</a>
+<a aria-label="فتح مواقيت الصلاة" class="prayer-details summary-open-btn status-details" href="#prayers" title="فتح مواقيت الصلاة">↗</a>
+</article>
+<article class="card dollar-card accent-card home-dollar-card home-value-card" id="homeDollarCard">
+<div class="card-head">
+<div>
+<span class="eyebrow" data-ar="الدولار الأمريكي" data-en="US Dollar">الدولار الأمريكي</span>
+<h2>USD / EGP</h2>
+</div>
+<span class="currency-symbol">$</span>
+<a aria-label="فتح تفاصيل الدولار" class="summary-open-btn card-open-btn" href="#currencyRatesCard" title="فتح تفاصيل الدولار">↗</a></div>
+<div class="center-stack">
+<div><span class="big-value" id="usdEgp">--</span><span class="unit" data-ar="ج.م" data-en="EGP">ج.م</span></div>
+<p data-ar="سعر مرجعي لكل دولار" data-en="Reference rate per dollar">سعر مرجعي لكل دولار</p>
+<span class="source-badge" data-ar="جاري التحديث" data-en="Updating" id="fxSourceBadge">جاري التحديث</span>
+</div>
+<p class="updated-text" data-ar="آخر تحديث: —" data-en="Last update: —" id="fxUpdated">آخر تحديث: —</p>
+</article>
+<article class="card home-gold21-card home-value-card" id="homeGold21Card">
+<div class="card-head">
+<div><span class="eyebrow" data-ar="سعر الذهب" data-en="Gold price">سعر الذهب</span><h2 data-ar="عيار 21" data-en="21K gold">عيار 21</h2></div>
+<a aria-label="فتح تفاصيل الذهب" class="summary-open-btn card-open-btn" href="#goldDetailsCard" title="فتح تفاصيل الذهب">↗</a>
+</div>
+<div class="home-price-line"><span class="big-value" id="homeGold21">--</span><span class="unit" data-ar="ج.م/جرام" data-en="EGP/g">ج.م/جرام</span></div>
+</article><article class="card home-ounce-card home-value-card" id="homeGoldOunceCard">
+<div class="card-head">
+<div><span class="eyebrow" data-ar="سعر أونصة الذهب" data-en="Gold ounce price">سعر أونصة الذهب</span><h2>XAU / USD</h2></div>
+<div aria-hidden="true" class="gold-bars-icon"><span></span><span></span><span></span></div>
+<a aria-label="فتح تفاصيل الذهب" class="summary-open-btn card-open-btn" href="#goldDetailsCard" title="فتح تفاصيل الذهب">↗</a></div>
+<div class="ounce-main-value"><span class="big-value" id="homeGoldOunceUsd">--</span><span class="unit">USD</span></div>
+<div class="ounce-egp-row"><span data-ar="ما يعادل بالجنيه" data-en="Equivalent in EGP">ما يعادل بالجنيه</span><strong id="homeGoldOunceEgp">-- ج.م</strong></div>
+<p class="updated-text" data-ar="آخر تحديث: —" data-en="Last update: —" id="homeGoldOunceUpdated">آخر تحديث: —</p>
+</article>
+<article class="card home-today-weather-card" id="homeTodayWeatherCard">
+<div class="card-head">
+<div><span class="eyebrow" data-ar="الطقس" data-en="Weather">الطقس</span><h2 data-ar="طقس اليوم" data-en="Today's weather">طقس اليوم</h2></div>
+<a aria-label="فتح تفاصيل الطقس" class="summary-open-btn card-open-btn" href="#weather" title="فتح تفاصيل الطقس">↗</a>
+</div>
+<div class="today-weather-content">
+<div class="today-weather-icon" id="homeTodayWeatherIcon">☀️</div>
+<div class="today-weather-copy"><strong id="homeTodayWeatherDesc">—</strong><span data-ar="القاهرة" data-en="Cairo">القاهرة</span></div>
+<div class="today-weather-temps"><span><small data-ar="العظمى" data-en="High">العظمى</small><b id="homeTodayMax">--°</b></span><span><small data-ar="الصغرى" data-en="Low">الصغرى</small><b id="homeTodayMin">--°</b></span><span><small data-ar="مطر" data-en="Rain">مطر</small><b id="homeTodayRain">--%</b></span></div>
+</div>
+</article><article class="card prayer-timeline-card home-prayer-timeline" id="prayerTimelineCard">
+<div class="card-head timeline-card-head">
+<div><span class="eyebrow" data-ar="الشريط الزمني اليومي" data-en="Daily timeline">الشريط الزمني اليومي</span><h2 data-ar="موقع الوقت بين مواقيت الصلاة" data-en="Current position across prayer times">موقع الوقت بين مواقيت الصلاة</h2></div>
+<span class="source-badge" id="timelinePhaseLabel">—</span>
+</div>
+<div class="prayer-timeline-scroll">
+<div class="prayer-timeline" id="prayerTimeline">
+<div class="timeline-track"><div class="timeline-progress" id="timelineProgress"></div></div>
+<div class="timeline-now-marker" id="timelineNowMarker"><span id="timelineNowIcon">☀️</span><small id="timelineNowTime">--:--</small></div>
+<div class="timeline-prayers" id="timelinePrayerPoints"></div>
+</div>
+</div>
+<p class="timeline-caption" data-ar="تتحرك الأيقونة تلقائيًا حسب توقيت القاهرة." data-en="The icon moves automatically using Cairo time." id="timelineCaption">تتحرك الأيقونة تلقائيًا حسب توقيت القاهرة.</p>
+</article></section>
+<section class="section-block page-view" id="weather"><div class="page-toolbar"><a aria-label="العودة للرئيسية" class="page-home-btn" href="#home"><span>←</span><b data-ar="الرئيسية" data-en="Home">الرئيسية</b></a></div>
+<div class="section-title">
+<div><span class="eyebrow" data-ar="التوقعات" data-en="Forecast">التوقعات</span><h2 data-ar="طقس الأسبوع" data-en="Weekly weather">طقس الأسبوع</h2></div>
+<button class="ghost-btn" data-ar="تحديث الطقس" data-en="Refresh weather" id="weatherRefreshBtn" type="button">تحديث الطقس</button>
+</div><article class="card weather-now-card wide-card section-summary-card" id="weatherNowCard">
+<div class="card-head">
+<div>
+<span class="eyebrow" data-ar="الطقس الآن" data-en="Current weather">الطقس الآن</span>
+<h2 data-ar="القاهرة" data-en="Cairo">القاهرة</h2>
+</div>
+<span class="source-badge" id="weatherLiveBadge">—</span>
+</div>
+<div class="weather-main">
+<div aria-hidden="true" class="weather-icon" id="weatherIcon">☀️</div>
+<div>
+<div><span class="big-value" id="currentTemp">--</span><span class="unit" data-ar="°م" data-en="°C">°م</span></div>
+<p data-ar="جاري تحميل الطقس…" data-en="Loading weather…" id="weatherDesc">جاري تحميل الطقس…</p>
+</div>
+</div>
+<div class="metric-grid four">
+<div><span data-ar="المحسوسة" data-en="Feels like">المحسوسة</span><strong id="feelsLike">--°</strong></div>
+<div><span data-ar="الرطوبة" data-en="Humidity">الرطوبة</span><strong id="humidity">--%</strong></div>
+<div><span data-ar="الرياح" data-en="Wind">الرياح</span><strong id="windSpeed">--</strong></div>
+<div><span data-ar="الهَبّات" data-en="Gusts">الهَبّات</span><strong id="windGust">--</strong></div>
+<div><span data-ar="المطر الآن" data-en="Rain now">المطر الآن</span><strong data-ar="-- مم" data-en="-- mm" id="rainNow">-- مم</strong></div>
+<div><span data-ar="الضغط" data-en="Pressure">الضغط</span><strong id="pressureNow">-- hPa</strong></div>
+<div><span data-ar="اتجاه الرياح" data-en="Wind direction">اتجاه الرياح</span><strong id="windDirectionNow">--</strong></div>
+<div><span data-ar="السحب" data-en="Cloud cover">السحب</span><strong id="cloudCoverNow">--%</strong></div>
+</div>
+<p class="updated-text" data-ar="آخر تحديث: —" data-en="Last update: —" id="weatherUpdated">آخر تحديث: —</p>
+</article>
+<div class="alert-box hidden" id="weatherAlert"></div>
+<div class="forecast-strip skeleton-host" id="dailyForecast"></div>
+<article class="card wide-card">
+<div class="card-head">
+<div><span class="eyebrow" data-ar="الساعات القادمة" data-en="Next hours">الساعات القادمة</span><h2 data-ar="الحرارة والأمطار والرياح" data-en="Temperature, rain and wind">الحرارة والأمطار والرياح</h2></div>
+</div>
+<div class="hourly-strip" id="hourlyForecast"></div>
+</article>
+</section>
+<section class="section-block page-view" id="money"><div class="page-toolbar"><a aria-label="العودة للرئيسية" class="page-home-btn" href="#home"><span>←</span><b data-ar="الرئيسية" data-en="Home">الرئيسية</b></a></div>
+<div class="section-title">
+<div><span class="eyebrow" data-ar="الأسواق" data-en="Markets">الأسواق</span><h2 data-ar="العملات والذهب" data-en="Currencies and gold">العملات والذهب</h2></div>
+<button class="ghost-btn" data-ar="تحديث الأسعار" data-en="Refresh prices" id="moneyRefreshBtn" type="button">تحديث الأسعار</button>
+</div>
+<div class="money-grid"><article class="card gold-card section-summary-card" id="goldSummaryCard">
+<div class="card-head">
+<div>
+<span class="eyebrow" data-ar="الذهب" data-en="Gold">الذهب</span>
+<h2 data-ar="عيار 21" data-en="21K">عيار 21</h2>
+</div>
+<span class="gold-dot">●</span>
+</div>
+<div class="center-stack">
+<div><span class="big-value" id="gold21">--</span><span class="unit" data-ar="ج.م/جرام" data-en="EGP/g">ج.م/جرام</span></div>
+<div class="change neutral" data-ar="لا توجد مقارنة بعد" data-en="No comparison yet" id="goldChange">لا توجد مقارنة بعد</div>
+<p class="fine-print" data-ar="تقدير عالمي قبل المصنعية والرسوم" data-en="Global estimate before workmanship and fees">تقدير عالمي قبل المصنعية والرسوم</p>
+</div>
+<p class="updated-text" data-ar="آخر تحديث: —" data-en="Last update: —" id="goldUpdated">آخر تحديث: —</p>
+</article>
+<article class="card span-2" id="currencyRatesCard">
+<div class="card-head"><div><span class="eyebrow" data-ar="أسعار مرجعية" data-en="Reference rates">أسعار مرجعية</span><h2 data-ar="عملات مقابل الجنيه" data-en="Currencies against EGP">عملات مقابل الجنيه</h2></div><span class="source-badge" id="ratesDate">—</span></div>
+<div class="rates-grid" id="currencyRates"></div>
+</article>
+<article class="card converter-card" id="currencyConverterCard">
+<div class="card-head"><div><span class="eyebrow" data-ar="محول العملات" data-en="Currency converter">محول العملات</span><h2 data-ar="تحويل فوري" data-en="Instant conversion">تحويل فوري</h2></div></div>
+<label><span data-ar="المبلغ" data-en="Amount">المبلغ</span><input id="convertAmount" inputmode="decimal" min="0" step="any" type="number" value="100"/>
+</label>
+<div class="convert-row">
+<select id="convertFrom"></select>
+<button aria-label="عكس العملات" class="swap-btn" id="swapCurrencies" type="button">⇄</button>
+<select id="convertTo"></select>
+</div>
+<div class="convert-result" id="convertResult">—</div>
+<p class="fine-print" data-ar="أسعار مرجعية وليست سعر شراء أو بيع بنكي." data-en="Reference rates, not bank buy/sell rates.">أسعار مرجعية وليست سعر شراء أو بيع بنكي.</p>
+</article>
+<article class="card span-2" id="goldDetailsCard">
+<div class="card-head"><div><span class="eyebrow" data-ar="تفاصيل الذهب" data-en="Gold details">تفاصيل الذهب</span><h2 data-ar="سعر الأونصة والعيارات" data-en="Ounce and karat prices">سعر الأونصة والعيارات</h2></div><span class="source-badge" data-ar="مباشر" data-en="Live">مباشر</span></div>
+<div class="gold-ounce-highlight">
+<div><span data-ar="أونصة الذهب العالمية" data-en="Global gold ounce">أونصة الذهب العالمية</span><strong id="goldOunce">$—</strong></div>
+<div><span data-ar="القيمة التقريبية بالجنيه" data-en="Approximate value in EGP">القيمة التقريبية بالجنيه</span><strong id="goldOunceEgp">— ج.م</strong></div>
+</div>
+<div class="gold-grid" id="goldKarats"></div>
+</article>
+<article class="card gold-calc-card removed-tool" id="goldCalculatorCard">
+<div class="card-head"><div><span class="eyebrow" data-ar="حاسبة الذهب" data-en="Gold calculator">حاسبة الذهب</span><h2 data-ar="قيمة الوزن" data-en="Weight value">قيمة الوزن</h2></div></div>
+<label><span data-ar="الوزن بالجرام" data-en="Weight in grams">الوزن بالجرام</span><input id="goldWeight" min="0" step="0.01" type="number" value="10"/>
+</label>
+<label><span data-ar="العيار" data-en="Karat">العيار</span><select id="goldKaratSelect">
+<option value="24">24</option>
+<option value="22">22</option>
+<option selected="" value="21">21</option>
+<option value="18">18</option>
+</select>
+</label>
+<label><span data-ar="ضبط السوق المحلي (%)" data-en="Local market adjustment (%)">ضبط السوق المحلي (%)</span><input id="goldPremium" step="0.1" type="number" value="0"/>
+</label>
+<div class="convert-result" id="goldCalcResult">—</div>
+</article>
+</div>
+</section>
+<section class="section-block page-view" id="prayers"><div class="page-toolbar"><a aria-label="العودة للرئيسية" class="page-home-btn" href="#home"><span>←</span><b data-ar="الرئيسية" data-en="Home">الرئيسية</b></a></div>
+<div class="section-title">
+<div><span class="eyebrow" data-ar="مواقيت القاهرة" data-en="Cairo timings">مواقيت القاهرة</span><h2 data-ar="الصلوات اليوم" data-en="Today prayers">الصلوات اليوم</h2></div>
+<button class="ghost-btn" data-ar="تحديث المواقيت" data-en="Refresh timings" id="prayerRefreshBtn" type="button">تحديث المواقيت</button>
+</div><article class="card prayer-next-card wide-card section-summary-card" id="nextPrayerCard">
+<div class="card-head">
+<div>
+<span class="eyebrow" data-ar="الصلاة القادمة" data-en="Next prayer">الصلاة القادمة</span>
+<h2 id="nextPrayerName">—</h2>
+</div>
+<span class="prayer-icon">☪</span>
+</div>
+<div class="center-stack">
+<div class="big-value" id="nextPrayerTime">--:--</div>
+<p data-ar="متبقي" data-en="Remaining">متبقي</p>
+<div class="countdown" id="prayerCountdown">--:--:--</div>
+</div>
+<p class="updated-text" data-ar="طريقة الحساب: الهيئة المصرية" data-en="Calculation: Egyptian Authority" id="prayerUpdated">طريقة الحساب: الهيئة المصرية</p>
+</article>
+<div class="prayer-grid" id="prayerCards"></div>
+</section>
+<section class="section-block page-view" id="tools"><div class="page-toolbar"><a aria-label="العودة للرئيسية" class="page-home-btn" href="#home"><span>←</span><b data-ar="الرئيسية" data-en="Home">الرئيسية</b></a></div>
+<div class="section-title"><div><span class="eyebrow" data-ar="أداة مستقلة" data-en="Standalone tool">أداة مستقلة</span><h2 data-ar="الآلة الحاسبة" data-en="Calculator">الآلة الحاسبة</h2></div></div>
+<div class="tools-grid">
+<article class="card calculator-card calculator-pro wide-card rtl-calculator" id="calculatorCard">
+<div class="card-head calculator-head">
+<div class="calculator-title-wrap"><span aria-hidden="true" class="calculator-header-icon"><i></i><b></b></span><div><span class="eyebrow" data-ar="آلة حاسبة" data-en="Calculator">آلة حاسبة</span><h2 data-ar="تصميم سريع وواضح" data-en="Fast, clear design">تصميم سريع وواضح</h2></div></div>
+<button class="text-btn" data-ar="مسح السجل" data-en="Clear history" id="calcClearHistory" type="button">مسح السجل</button>
+</div>
+<div class="calculator-shell">
+<div class="calculator-display">
+<div class="calc-expression" id="calcExpression">0</div>
+<div class="calc-result" id="calcResult">0</div>
+</div>
+<div class="calc-keys" id="calcKeys">
+<button class="utility" data-action="clear">AC</button>
+<button class="utility" data-action="back">⌫</button>
+<button class="utility" data-value="(">(</button>
+<button class="utility" data-value=")">)</button>
+<button class="utility" data-value="%">%</button>
+<button data-value="7">7</button>
+<button data-value="8">8</button>
+<button data-value="9">9</button>
+<button class="scientific" data-action="sqrt">√</button>
+<button class="op" data-value="/">÷</button>
+<button data-value="4">4</button>
+<button data-value="5">5</button>
+<button data-value="6">6</button>
+<button class="scientific" data-value="^">xʸ</button>
+<button class="op" data-value="*">×</button>
+<button data-value="1">1</button>
+<button data-value="2">2</button>
+<button data-value="3">3</button>
+<button data-value="00">00</button>
+<button class="op" data-value="-">−</button>
+<button data-value="000">000</button>
+<button data-value="0">0</button>
+<button data-value=".">.</button>
+<button class="op" data-value="+">+</button>
+<button class="equals" data-action="equals">=</button>
+</div>
+</div>
+<div class="calc-history" id="calcHistory"></div>
+</article>
+<article class="card timer-card removed-tool" id="timerCard">
+<div class="card-head"><div><span class="eyebrow" data-ar="المؤقت" data-en="Timer">المؤقت</span><h2 data-ar="عد تنازلي" data-en="Countdown">عد تنازلي</h2></div></div>
+<div class="tool-time" id="timerDisplay">00:05:00</div>
+<div class="timer-inputs">
+<label><span data-ar="ساعة" data-en="Hour">ساعة</span><input id="timerHours" max="99" min="0" type="number" value="0"/></label>
+<label><span data-ar="دقيقة" data-en="Minute">دقيقة</span><input id="timerMinutes" max="59" min="0" type="number" value="5"/></label>
+<label><span data-ar="ثانية" data-en="Second">ثانية</span><input id="timerSeconds" max="59" min="0" type="number" value="0"/></label>
+</div>
+<div class="button-row">
+<button class="primary-btn" data-ar="بدء" data-en="Start" id="timerStart" type="button">بدء</button>
+<button class="secondary-btn" data-ar="إيقاف مؤقت" data-en="Pause" id="timerPause" type="button">إيقاف مؤقت</button>
+<button class="ghost-btn" data-ar="إعادة" data-en="Reset" id="timerReset" type="button">إعادة</button>
+</div>
+<div class="quick-timers">
+<button data-ar="1 د" data-en="1 min" data-minutes="1">1 د</button><button data-ar="5 د" data-en="5 min" data-minutes="5">5 د</button><button data-ar="10 د" data-en="10 min" data-minutes="10">10 د</button><button data-ar="15 د" data-en="15 min" data-minutes="15">15 د</button><button data-ar="30 د" data-en="30 min" data-minutes="30">30 د</button>
+</div>
+</article>
+<article class="card stopwatch-card removed-tool" id="stopwatchCard">
+<div class="card-head"><div><span class="eyebrow" data-ar="ساعة إيقاف" data-en="Stopwatch">ساعة إيقاف</span><h2 data-ar="مع اللفات" data-en="With laps">مع اللفات</h2></div></div>
+<div class="tool-time" id="stopwatchDisplay">00:00:00.00</div>
+<div class="button-row">
+<button class="primary-btn" data-ar="بدء" data-en="Start" id="stopwatchStart" type="button">بدء</button>
+<button class="secondary-btn" data-ar="لفة" data-en="Lap" id="stopwatchLap" type="button">لفة</button>
+<button class="ghost-btn" data-ar="إعادة" data-en="Reset" id="stopwatchReset" type="button">إعادة</button>
+</div>
+<ol class="lap-list" id="lapList"></ol>
+</article>
+<article class="card pedometer-card removed-tool" id="pedometerCard">
+<div class="card-head"><div><span class="eyebrow" data-ar="عداد الخطوات" data-en="Step counter">عداد الخطوات</span><h2 data-ar="حساسية متوسطة" data-en="Medium sensitivity">حساسية متوسطة</h2></div><span class="source-badge" data-ar="متوقف" data-en="Stopped" id="stepStatus">متوقف</span></div>
+<div class="steps-circle">
+<span id="stepCount">0</span>
+<small data-ar="خطوة اليوم" data-en="steps today">خطوة اليوم</small>
+</div>
+<div class="metric-grid three">
+<div><span data-ar="المسافة" data-en="Distance">المسافة</span><strong data-ar="0 كم" data-en="0 km" id="stepDistance">0 كم</strong></div>
+<div><span data-ar="السعرات" data-en="Calories">السعرات</span><strong id="stepCalories">0</strong></div>
+<div><span data-ar="الهدف" data-en="Goal">الهدف</span><strong id="stepGoalText">0%</strong></div>
+</div>
+<label><span data-ar="الحساسية" data-en="Sensitivity">الحساسية</span><select id="stepSensitivity">
+<option data-ar="منخفضة" data-en="Low" value="low">منخفضة</option>
+<option data-ar="متوسطة" data-en="Medium" selected="" value="medium">متوسطة</option>
+<option data-ar="مرتفعة" data-en="High" value="high">مرتفعة</option>
+</select>
+</label>
+<label><span data-ar="هدف اليوم" data-en="Daily goal">هدف اليوم</span><input id="stepGoal" min="100" step="100" type="number" value="6000"/>
+</label>
+<div class="button-row">
+<button class="primary-btn" data-ar="تشغيل العداد" data-en="Start counter" id="stepStart" type="button">تشغيل العداد</button>
+<button class="ghost-btn" data-ar="تصفير اليوم" data-en="Reset today" id="stepReset" type="button">تصفير اليوم</button>
+</div>
+<p class="fine-print" data-ar="يحتاج هاتفًا بحساس حركة وإذن الوصول للحركة. يظل أفضل عند بقاء التطبيق مفتوحًا." data-en="Requires a phone motion sensor and permission. Background mode works best in the Android app.">يحتاج هاتفًا بحساس حركة وإذن الوصول للحركة. يظل أفضل عند بقاء التطبيق مفتوحًا.</p>
+</article>
+<article class="card speed-card span-2 removed-tool" id="speedCard">
+<div class="card-head"><div><span class="eyebrow" data-ar="اختبار الإنترنت" data-en="Internet test">اختبار الإنترنت</span><h2 data-ar="تنزيل وزمن استجابة تقريبي" data-en="Download, upload and latency estimate">تنزيل وزمن استجابة تقريبي</h2></div><span class="source-badge" data-ar="جاهز" data-en="Ready" id="speedQuality">جاهز</span></div>
+<div class="speed-gauge"><div class="speed-needle" id="speedNeedle"></div><div class="speed-center"></div></div>
+<div class="speed-values">
+<div><span data-ar="التنزيل" data-en="Download">التنزيل</span><strong id="downloadSpeed">— Mbps</strong></div>
+<div><span data-ar="الرفع" data-en="Upload">الرفع</span><strong id="uploadSpeed">— Mbps</strong></div>
+<div><span data-ar="زمن الاستجابة" data-en="Latency">زمن الاستجابة</span><strong id="latencyValue">— ms</strong></div>
+<div><span data-ar="التذبذب Jitter" data-en="Jitter">التذبذب Jitter</span><strong id="jitterValue">— ms</strong></div>
+<div><span data-ar="نجاح الطلبات" data-en="Request success">نجاح الطلبات</span><strong id="packetSuccess">—%</strong></div>
+</div>
+<button class="primary-btn" data-ar="ابدأ الاختبار الكامل" data-en="Start full test" id="speedTestBtn" type="button">ابدأ الاختبار الكامل</button>
+<p class="fine-print" data-ar="اختبار تقريبي عبر شبكة Cloudflare؛ استهلاك الاختبار نحو 6–8 ميجابايت." data-en="Approximate Cloudflare test; uses about 6–8 MB." id="speedNote">اختبار تقريبي عبر شبكة Cloudflare؛ استهلاك الاختبار نحو 6–8 ميجابايت.</p>
+<div class="speed-history" id="speedHistory"></div>
+</article>
+</div>
+</section>
+<section class="section-block page-view" id="settings"><div class="page-toolbar"><a aria-label="العودة للرئيسية" class="page-home-btn" href="#home"><span>←</span><b data-ar="الرئيسية" data-en="Home">الرئيسية</b></a></div>
+<div class="section-title"><div><span class="eyebrow" data-ar="التخصيص" data-en="Customization">التخصيص</span><h2 data-ar="إعدادات التطبيق" data-en="App settings">إعدادات التطبيق</h2></div></div>
+<div class="settings-grid"><article class="card span-2 settings-quick-card">
+<div class="card-head"><div><span class="eyebrow" data-ar="إدارة التطبيق" data-en="App controls">إدارة التطبيق</span><h3 data-ar="إجراءات سريعة" data-en="Quick actions">إجراءات سريعة</h3></div></div>
+<div class="settings-quick-controls" id="settingsQuickControls"><span class="status-pill settings-status-control" id="connectionBadge"><span class="dot"></span><span data-ar="فحص الاتصال…" data-en="Checking connection…">فحص الاتصال…</span></span><button aria-label="تحديث كل البيانات" class="icon-btn settings-action-control" data-title-ar="تحديث كل البيانات" data-title-en="Refresh all data" id="refreshAllBtn" title="تحديث كل البيانات" type="button">↻</button><button aria-label="تبديل الوضع" class="icon-btn settings-action-control" data-title-ar="تبديل الوضع" data-title-en="Toggle theme" id="themeBtn" title="تبديل الوضع" type="button">☾</button><button aria-label="Switch language" class="icon-btn language-btn settings-action-control" id="languageBtn" title="English" type="button">EN</button><button class="install-btn settings-action-control hidden" data-ar="تثبيت التطبيق" data-en="Install app" id="installBtn" type="button">تثبيت التطبيق</button></div>
+</article><article class="card span-2 clock-design-settings"><div class="card-head"><div><span class="eyebrow" data-ar="الساعة" data-en="Clock">الساعة</span><h3 data-ar="تصميم عقارب الساعة والواجهة الرقمية" data-en="Analog and digital clock design">تصميم عقارب الساعة والواجهة الرقمية</h3></div></div><div class="clock-customizer">
+<label><span data-ar="تصميم العقارب" data-en="Analog design">تصميم العقارب</span>
+<select class="compact-select" id="analogStyleSelect">
+<option data-ar="كلاسيكية" data-en="Classic" value="classic">كلاسيكية</option>
+<option data-ar="فاخرة" data-en="Luxury" value="luxury">فاخرة</option>
+<option data-ar="بسيطة" data-en="Minimal" value="minimal">بسيطة</option>
+<option data-ar="نيون" data-en="Neon" value="neon">نيون</option>
+<option data-ar="طيران" data-en="Pilot" value="pilot">طيران</option>
+<option data-ar="عاجية" data-en="Ivory" value="ivory">عاجية</option>
+</select>
+</label>
+<label><span data-ar="أرقام العقارب" data-en="Analog numerals">أرقام العقارب</span>
+<select class="compact-select" id="analogNumeralsSelect">
+<option data-ar="إنجليزية 12" data-en="Western 12" value="western">إنجليزية 12</option>
+<option data-ar="عربية ١٢" data-en="Arabic ١٢" value="eastern">عربية ١٢</option>
+<option data-ar="رومانية XII" data-en="Roman XII" value="roman">رومانية XII</option>
+<option data-ar="علامات فقط" data-en="Markers only" value="markers">علامات فقط</option>
+</select>
+</label>
+<label><span data-ar="تصميم الرقمية" data-en="Digital design">تصميم الرقمية</span>
+<select class="compact-select" id="digitalStyleSelect">
+<option data-ar="شاشة رقمية" data-en="Digital display" value="segment">شاشة رقمية</option>
+<option data-ar="لوحات متقلبة" data-en="Flip clock" value="flip">لوحات متقلبة</option>
+<option data-ar="نيون" data-en="Neon" value="neon-digital">نيون</option>
+<option data-ar="بسيطة" data-en="Minimal" value="minimal-digital">بسيطة</option>
+<option data-ar="عريضة" data-en="Bold" value="bold-digital">عريضة</option>
+</select>
+</label>
+<label><span data-ar="أرقام الرقمية" data-en="Digital digits">أرقام الرقمية</span>
+<select class="compact-select" id="digitalDigitsSelect">
+<option data-ar="إنجليزية 123" data-en="Western 123" value="western">إنجليزية 123</option>
+<option data-ar="عربية ١٢٣" data-en="Arabic ١٢٣" value="eastern">عربية ١٢٣</option>
+</select>
+</label>
+</div></article>
+<article class="card">
+<h3 data-ar="المظهر" data-en="Appearance">المظهر</h3>
+<label><span data-ar="لغة التطبيق" data-en="App language">لغة التطبيق</span><select id="languageSelect"><option data-ar="العربية" data-en="Arabic" value="ar">العربية</option><option data-ar="الإنجليزية" data-en="English" value="en">الإنجليزية</option></select></label><label><span data-ar="الوضع" data-en="Theme">الوضع</span><select id="themeSelect"><option data-ar="حسب الجهاز" data-en="System" value="auto">حسب الجهاز</option><option data-ar="داكن" data-en="Dark" value="dark">داكن</option><option data-ar="فاتح" data-en="Light" value="light">فاتح</option></select>
+</label>
+<label><span data-ar="لون الواجهة" data-en="Accent color">لون الواجهة</span><select id="accentSelect"><option data-ar="سماوي" data-en="Cyan" value="cyan">سماوي</option><option data-ar="أخضر" data-en="Green" value="green">أخضر</option><option data-ar="برتقالي" data-en="Orange" value="orange">برتقالي</option><option data-ar="بنفسجي" data-en="Violet" value="violet">بنفسجي</option></select>
+</label>
+<label class="switch-line"><input checked="" id="secondsToggle" type="checkbox"/><span data-ar="إظهار الثواني" data-en="Show seconds">إظهار الثواني</span></label>
+<label class="switch-line"><input id="hourFormatToggle" type="checkbox"/><span data-ar="نظام 12 ساعة" data-en="12-hour format">نظام 12 ساعة</span></label>
+</article>
+<article class="card">
+<h3 data-ar="البيانات والتحديث" data-en="Data and updates">البيانات والتحديث</h3>
+<label><span data-ar="تحديث الطقس" data-en="Refresh weather">تحديث الطقس</span><select id="weatherInterval"><option data-ar="كل 10 دقائق" data-en="Every 10 minutes" value="10">كل 10 دقائق</option><option data-ar="كل 15 دقيقة" data-en="Every 15 minutes" selected="" value="15">كل 15 دقيقة</option><option data-ar="كل 30 دقيقة" data-en="Every 30 minutes" value="30">كل 30 دقيقة</option></select>
+</label>
+<label><span data-ar="تحديث المال" data-en="Money refresh">تحديث المال</span><select id="moneyInterval"><option data-ar="كل 5 دقائق" data-en="Every 5 minutes" value="5">كل 5 دقائق</option><option data-ar="كل 15 دقيقة" data-en="Every 15 minutes" value="15">كل 15 دقيقة</option><option data-ar="كل 30 دقيقة" data-en="Every 30 minutes" selected="" value="30">كل 30 دقيقة</option><option data-ar="كل ساعة" data-en="Every hour" value="60">كل ساعة</option></select>
+</label>
+<button class="danger-btn" data-ar="مسح البيانات المحفوظة" data-en="Clear cached data" id="clearCacheBtn" type="button">مسح البيانات المحفوظة</button>
+</article>
+<article class="card span-2 native-background-card"><div class="card-head"><div><span class="eyebrow" data-ar="الصلاحيات" data-en="Permissions">الصلاحيات</span><h3 data-ar="الإشعارات والتشغيل على الويب" data-en="Web notifications and operation">الإشعارات والتشغيل على الويب</h3></div><span class="source-badge" data-ar="نسخة ويب" data-en="Web version" id="nativeModeBadge">نسخة ويب</span></div>
+<div class="background-status-grid">
+<div><span data-ar="إشعارات الصلاة" data-en="Prayer notifications">إشعارات الصلاة</span><strong data-ar="غير مفعلة" data-en="Disabled" id="prayerBackgroundStatus">غير مفعلة</strong></div>
+<div class="removed-tool"><span>عداد الخطوات</span><strong id="stepsBackgroundStatus">غير مفعّل</strong></div>
+<div><span data-ar="تحديث البيانات" data-en="Data updates">تحديث البيانات</span><strong data-ar="عند فتح التطبيق" data-en="When app opens" id="dataBackgroundStatus">عند فتح التطبيق</strong></div>
+<div><span data-ar="آخر تحديث" data-en="Last update">آخر تحديث</span><strong id="backgroundLastUpdate">—</strong></div>
+<div><span data-ar="إذن الإشعارات" data-en="Notification permission">إذن الإشعارات</span><strong id="exactAlarmStatus">—</strong></div>
+</div>
+<div class="button-row wrap">
+<button class="primary-btn" data-ar="منح صلاحية الإشعارات" data-en="Grant notification permission" id="requestNativePermissionsBtn" type="button">منح صلاحية الإشعارات</button>
+<button class="removed-tool" id="enableBackgroundUpdatesBtn" type="button"></button>
+<button class="removed-tool" id="openBatterySettingsBtn" type="button"></button>
+<button class="ghost-btn" data-ar="إعدادات الإشعارات" data-en="Notification settings" id="openNotificationSettingsBtn" type="button">إعدادات الإشعارات</button>
+</div>
+<p class="fine-print" data-ar="تعمل إشعارات الويب وفق دعم المتصفح وإعدادات الهاتف، وقد تتوقف عند إغلاق المتصفح بالكامل." data-en="Web notifications depend on browser and phone support and may stop when the browser is fully closed.">تعمل إشعارات الويب وفق دعم المتصفح وإعدادات الهاتف، وقد تتوقف عند إغلاق المتصفح بالكامل.</p></article>
+<article class="card span-2 about-card">
+<h3 data-ar="عن البيانات" data-en="About data">عن البيانات</h3>
+<p data-ar="الطقس من Open‑Meteo، أسعار العملات المرجعية من Frankfurter، مواقيت الصلاة من AlAdhan بطريقة الهيئة المصرية، وسعر الأونصة من Gold API. يعرض التطبيق آخر بيانات محفوظة عند انقطاع الإنترنت." data-en="Weather: Open-Meteo; reference FX: Frankfurter; prayer times: AlAdhan using the Egyptian method; gold ounce: Gold API. Cached data is shown offline.">الطقس من Open‑Meteo، أسعار العملات المرجعية من Frankfurter، مواقيت الصلاة من AlAdhan بطريقة الهيئة المصرية، وسعر الأونصة من Gold API. يعرض التطبيق آخر بيانات محفوظة عند انقطاع الإنترنت.</p>
+<p data-ar="لا يتضمن المشروع تسجيلًا تجاريًا أو محميًا للأذان. يمكنك اختيار ملف صوتي مرخّص أو ملفًا تملكه من داخل التطبيق، وسيُنسخ إلى مساحة التطبيق الخاصة للاستخدام في الخلفية." data-en="The project does not include a commercial or protected adhan recording. You can choose a licensed audio file you own, which is copied to private app storage for background use.">لا يتضمن المشروع تسجيلًا تجاريًا أو محميًا للأذان. يمكنك اختيار ملف صوتي مرخّص أو ملفًا تملكه من داخل التطبيق، وسيُنسخ إلى مساحة التطبيق الخاصة للاستخدام في الخلفية.</p>
+<p data-ar="أسعار العملات والذهب معلومات مرجعية وليست توصية مالية، وقد تختلف عن أسعار البنوك ومحلات الذهب بسبب فروق الشراء والبيع والمصنعية والرسوم." data-en="Currency and gold prices are reference information, not financial advice, and may differ from banks and shops due to spreads, workmanship and fees.">أسعار العملات والذهب معلومات مرجعية وليست توصية مالية، وقد تختلف عن أسعار البنوك ومحلات الذهب بسبب فروق الشراء والبيع والمصنعية والرسوم.</p>
+</article>
+<article class="card wide-card prayer-settings-inline prayer-control-card">
+<div class="prayer-settings-copy">
+<span class="eyebrow" data-ar="الأذان والتنبيهات" data-en="Adhan and alerts">الأذان والتنبيهات</span>
+<h3 data-ar="يعمل في الخلفية على Android" data-en="Works in background on Android">يعمل في الخلفية على Android</h3>
+<p data-ar="يُجدول التطبيق الصلوات بإنذارات دقيقة، ويشغّل ملف الأذان المختار حتى مع قفل الشاشة." data-en="The app schedules exact prayer alarms and plays the selected adhan while the screen is locked.">يُجدول التطبيق الصلوات بإنذارات دقيقة، ويشغّل ملف الأذان المختار حتى مع قفل الشاشة.</p>
+<p class="fine-print" data-ar="الصوت الحالي: نغمة التطبيق الافتراضية" data-en="Current sound: default app chime" id="adhanAudioStatus">الصوت الحالي: نغمة التطبيق الافتراضية</p>
+<p class="fine-print" data-ar="لاستخدام أذان الشيخ نصر الدين طوبار اختر تسجيلًا تملكه أو لديك إذن باستخدامه." data-en="To use Sheikh Nasr El-Din Tobar’s adhan, choose a recording you own or are licensed to use.">لاستخدام أذان الشيخ نصر الدين طوبار اختر تسجيلًا تملكه أو لديك إذن باستخدامه.</p>
+</div>
+<div class="prayer-control-grid">
+<label class="switch-line"><input id="prayerAlertToggle" type="checkbox"/><span data-ar="تشغيل تنبيه الصلاة" data-en="Enable prayer alert">تشغيل تنبيه الصلاة</span></label>
+<label class="switch-line"><input checked="" id="adhanPlaybackToggle" type="checkbox"/><span data-ar="تشغيل الأذان عند الوقت" data-en="Play adhan at prayer time">تشغيل الأذان عند الوقت</span></label>
+<label><span data-ar="التنبيه المسبق" data-en="Advance alert">التنبيه المسبق</span><select id="prayerAlertMinutes">
+<option data-ar="بدون تنبيه مسبق" data-en="No advance alert" value="0">بدون تنبيه مسبق</option>
+<option data-ar="قبلها بـ 5 دقائق" data-en="5 minutes before" value="5">قبلها بـ 5 دقائق</option>
+<option data-ar="قبلها بـ 10 دقائق" data-en="10 minutes before" selected="" value="10">قبلها بـ 10 دقائق</option>
+<option data-ar="قبلها بـ 15 دقيقة" data-en="15 minutes before" value="15">قبلها بـ 15 دقيقة</option>
+<option data-ar="قبلها بـ 30 دقيقة" data-en="30 minutes before" value="30">قبلها بـ 30 دقيقة</option>
+</select>
+</label>
+<button class="secondary-btn" data-ar="اختيار ملف أذان من الهاتف" data-en="Choose adhan audio" id="chooseAdhanBtn" type="button">اختيار ملف أذان من الهاتف</button>
+<button class="ghost-btn" data-ar="تجربة الصوت" data-en="Test sound" id="testAdhanBtn" type="button">تجربة الصوت</button>
+<button class="danger-btn" data-ar="إيقاف الأذان" data-en="Stop adhan" id="stopAdhanBtn" type="button">إيقاف الأذان</button>
+<button class="ghost-btn" data-ar="حذف الصوت المخصص" data-en="Remove custom sound" id="clearAdhanBtn" type="button">حذف الصوت المخصص</button>
+</div>
+<input accept="audio/*" hidden="" id="adhanFileInput" type="file"/>
+</article><article class="card wide-card prayer-offsets-card">
+<div>
+<span class="eyebrow" data-ar="مطابقة التوقيت المحلي" data-en="Local timing adjustment">مطابقة التوقيت المحلي</span>
+<h3 data-ar="تعديل دقائق كل صلاة" data-en="Adjust each prayer">تعديل دقائق كل صلاة</h3>
+<p class="fine-print" data-ar="اترك القيمة صفرًا، أو أضف/اطرح دقائق عند الحاجة لمطابقة التوقيت الرسمي." data-en="Leave zero, or add/subtract minutes to match official timings.">اترك القيمة صفرًا، أو أضف/اطرح دقائق عند الحاجة لمطابقة التوقيت الرسمي.</p>
+</div>
+<div class="offset-grid">
+<label><span data-ar="الفجر" data-en="Fajr">الفجر</span><input id="offsetFajr" max="30" min="-30" type="number" value="0"/></label>
+<label><span data-ar="الظهر" data-en="Dhuhr">الظهر</span><input id="offsetDhuhr" max="30" min="-30" type="number" value="0"/></label>
+<label><span data-ar="العصر" data-en="Asr">العصر</span><input id="offsetAsr" max="30" min="-30" type="number" value="0"/></label>
+<label><span data-ar="المغرب" data-en="Maghrib">المغرب</span><input id="offsetMaghrib" max="30" min="-30" type="number" value="0"/></label>
+<label><span data-ar="العشاء" data-en="Isha">العشاء</span><input id="offsetIsha" max="30" min="-30" type="number" value="0"/></label>
+</div>
+<button class="primary-btn" data-ar="حفظ وإعادة جدولة الصلوات" data-en="Save and reschedule prayers" id="reschedulePrayerBtn" type="button">حفظ وإعادة جدولة الصلوات</button>
+</article><article class="card device-card section-summary-card settings-secondary-card" id="deviceCard">
+<div class="card-head">
+<div>
+<span class="eyebrow" data-ar="الجهاز والاتصال" data-en="Device and connection">الجهاز والاتصال</span>
+<h2 data-ar="الحالة المباشرة" data-en="Live status">الحالة المباشرة</h2>
+</div>
+<span class="device-icon">⌁</span>
+</div>
+<div class="device-stats">
+<div class="device-row">
+<span data-ar="البطارية" data-en="Battery">البطارية</span>
+<div class="battery-shell"><div class="battery-fill" id="batteryFill"></div></div>
+<strong data-ar="غير متاح" data-en="Unavailable" id="batteryText">غير متاح</strong>
+</div>
+<div class="device-row">
+<span data-ar="نوع الشبكة" data-en="Network type">نوع الشبكة</span><strong id="networkType">—</strong>
+</div>
+<div class="device-row">
+<span data-ar="السرعة التقديرية" data-en="Estimated speed">السرعة التقديرية</span><strong id="networkEstimate">—</strong>
+</div>
+</div>
+<button class="primary-btn full removed-tool" data-ar="اختبار سرعة التنزيل" data-en="Test download speed" id="quickSpeedBtn" type="button">اختبار سرعة التنزيل</button>
+</article><article class="card home-widget-card settings-secondary-card" id="homeWidgetCard">
+<div class="card-head">
+<div><span class="eyebrow" data-ar="ودجت الشاشة الرئيسية" data-en="Home screen widget">ودجت الشاشة الرئيسية</span><h2 data-ar="نظرة سريعة بدون فتح التطبيق" data-en="At a glance without opening the app">نظرة سريعة بدون فتح التطبيق</h2></div>
+<span class="source-badge" data-ar="Android" data-en="Android">Android</span>
+</div>
+<div aria-label="معاينة ودجت نبض القاهرة" class="widget-preview">
+<div class="widget-preview-top"><strong data-ar="نبض القاهرة" data-en="Cairo Pulse">نبض القاهرة</strong><span id="widgetPreviewWeatherIcon">☀️</span></div>
+<div class="widget-preview-main"><div><span class="widget-temp"><b id="widgetPreviewTemp">--</b>°</span><small id="widgetPreviewWeatherDesc">—</small></div><div class="widget-prayer"><small data-ar="الصلاة القادمة" data-en="Next prayer">الصلاة القادمة</small><strong id="widgetPreviewPrayer">—</strong><span id="widgetPreviewRemaining">--:--</span></div></div>
+</div>
+<p class="fine-print" data-ar="يُضاف من قائمة Widgets في Android بعد تثبيت نسخة APK. يتحدث تلقائيًا ويعرض الحرارة والصلاة القادمة والوقت المتبقي." data-en="Add it from Android's Widgets menu after installing the APK. It refreshes automatically with temperature, next prayer and remaining time.">يُضاف من قائمة Widgets في Android بعد تثبيت نسخة APK. يتحدث تلقائيًا ويعرض الحرارة والصلاة القادمة والوقت المتبقي.</p>
+</article></div>
+</section>
+</main>
+<footer>
+<span data-ar="نبض القاهرة" data-en="Cairo Pulse">نبض القاهرة</span>
+<span data-ar="جاهز" data-en="Ready" id="footerStatus">جاهز</span>
+<span data-ar="الإصدار السابع — واجهة مختصرة وحاسبة مطورة" data-en="Version 7 — minimal home and upgraded calculator">الإصدار السابع — واجهة مختصرة وحاسبة مطورة</span>
+</footer>
+</div>
+<div aria-live="polite" class="toast" id="toast" role="status"></div>
+<audio id="alertAudio" preload="auto">
+<source src="data:audio/wav;base64,UklGRlYAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YTIAAACAq7jH0d7k6Ozu8/P19/j5+vr7+/v7+vr5+Pf18/Lu6uXe18u8r6KVi4B4c2heV09HQj03PTo=" type="audio/wav"/>
+</audio>
+<script defer="" src="app.js"></script>
+</body>
+</html>
