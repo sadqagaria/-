@@ -84,7 +84,7 @@ public class MainActivity extends Activity {
     private int dp(int n){return Math.round(n*getResources().getDisplayMetrics().density);}
     private TextView text(String v,int size,int color){
         TextView t=new TextView(this);
-        t.setText(v);t.setTextColor(color);t.setTextSize(size);t.setGravity(View.GRAVITY_CENTER_VERTICAL);
+        t.setText(v);t.setTextColor(color);t.setTextSize(size);t.setGravity(android.view.Gravity.CENTER_VERTICAL);
         return t;
     }
     private TextView button(String title, Runnable action){
