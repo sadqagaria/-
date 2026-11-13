@@ -1,0 +1,12 @@
+SATELLITE WORLD TV - خطوات تحويل المشروع الى APK
+
+1- فك الضغط عن SatelliteWorldTV-GitHubDesktop.zip.
+2- افتح GitHub Desktop -> File -> Add Local Repository.
+3- اختار مجلد SatelliteWorldTV بعد فك الضغط.
+4- اضغط Publish repository ثم اكتب الاسم SatelliteWorldTV.
+5- من github.com افتح المستودع -> Actions -> Build Android APK.
+6- عند نجاح البناء افتح آخر تشغيل -> Artifacts -> SatelliteWorldTV-debug-apk.
+7- فك ضغط الـ Artifact وثبّت app-debug.apk على موبايل أندرويد.
+
+ملاحظة: الـ APK لم يجمَّع بعد. نجاح البناء لا يعني تلقائيًا أن جميع روابط البث تعمل.
+README.md فيه شرح كامل بالعربي للمزايا وحدود النسخة.
