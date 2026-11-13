@@ -170,7 +170,7 @@ public class MainActivity extends Activity {
             runOnUiThread(()->{
                 catalog.clear();catalog.addAll(entries);
                 filter();
-                setStatus("تم فهرسة "+catalog.size+" قناة ومحطة. تشغيل الروابط غير مضمون.");
+                setStatus("تم فهرسة "+catalog.size()+" قناة ومحطة. تشغيل الروابط غير مضمون.");
             });
         });
     }
