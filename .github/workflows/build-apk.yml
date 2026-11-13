@@ -1,4 +1,4 @@
-name: Satellite World TV - Kotlin APK
+name: Satellite World TV - Android v0.3
 on:
   push:
     branches: [satellite-world-tv]
@@ -10,52 +10,89 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
-      - name: Extract enhanced Android project
+      - name: Apply receiver v0.3 source update
+        shell: bash
         run: |
+          set -euo pipefail
           mkdir -p kotlin-src
           tar -xJf satellite-kotlin-v02.tar.xz -C kotlin-src
-          test -f kotlin-src/app/build.gradle.kts
-          test -f kotlin-src/app/src/main/java/com/satelliteworld/tv/MainActivity.kt
-      - name: Setup JDK 17
+          xz -dc swt_v03_relative.diff.xz | patch -p1 --batch -d kotlin-src
+          test -f kotlin-src/app/src/main/java/com/satelliteworld/tv/recording/HlsRecorder.kt
+      - name: Bundle Egypt channel metadata snapshot from GitHub
+        shell: bash
+        run: |
+          set -e
+          mkdir -p kotlin-src/app/src/main/assets
+          python3 - <<'PY'
+          import urllib.request, csv, io, os
+          url='https://raw.githubusercontent.com/iptv-org/database/master/data/channels.csv'
+          try:
+              request=urllib.request.Request(url,headers={'User-Agent':'SatelliteWorldTV-Build/0.3'})
+              with urllib.request.urlopen(request,timeout=45) as response:
+                  data=response.read(12000000).decode('utf-8-sig')
+              selected=[]
+              for r in csv.DictReader(io.StringIO(data)):
+                  if r.get('country','').upper()!='EG': continue
+                  if str(r.get('closed','')).strip(): continue
+                  if r.get('is_nsfw','').strip().lower() == 'true': continue
+                  if not r.get('name','').strip(): continue
+                  selected.append({'name':r['name'],'url':'','group':'دليل القنوات المصرية',
+                      'country':'EG','id':r.get('id',''),
+                      'aliases':r.get('alt_names',''),
+                      'category':r.get('categories',''),
+                      'number':str(len(selected)+1)})
+              if len(selected) < 30: raise ValueError('Short directory')
+              dest='kotlin-src/app/src/main/assets/egypt-directory.csv'
+              with open(dest,'w',newline='',encoding='utf-8') as output:
+                  writer=csv.DictWriter(output,fieldnames=['name','url','group','country','id','aliases','category','number'])
+                  writer.writeheader()
+                  writer.writerows(selected)
+              print('Bundled Egypt metadata entries:',len(selected))
+          except Exception as exc:
+              print('WARNING: Offline metadata snapshot could not be updated:',exc)
+          PY
+      - name: Setup Java 17
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
-      - name: Set up Android SDK platform
+      - name: Setup Android SDK API 35
         shell: bash
         run: |
           set -eu
           SDKMANAGER="$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager | head -n 1)"
-          if [ -z "$SDKMANAGER" ]; then echo "sdkmanager not found"; exit 1; fi
+          test -n "$SDKMANAGER"
           yes | "$SDKMANAGER" --licenses > /dev/null || true
           "$SDKMANAGER" --install 'platforms;android-35' 'build-tools;35.0.0'
       - name: Setup Gradle 8.9
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.9'
-      - name: Kotlin parser / unit tests
+      - name: Run unit tests
         working-directory: kotlin-src
         run: gradle :app:testDebugUnitTest --no-daemon --stacktrace
-      - name: Compile and sign debug APK
+      - name: Compile APK
         working-directory: kotlin-src
         run: gradle :app:assembleDebug --no-daemon --stacktrace
       - name: Upload installable APK
         uses: actions/upload-artifact@v4
         with:
-          name: SatelliteWorldTV-Kotlin-v0.2-debug-apk
+          name: SatelliteWorldTV-v0.3-debug-apk
           path: kotlin-src/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
           retention-days: 60
-      - name: Export browsable Kotlin source branch
-        continue-on-error: true
+      - name: Export browsable Kotlin source branch (no workflows)
         shell: bash
+        continue-on-error: true
         run: |
-          set -eu
+          set -euo pipefail
+          tar -czf /tmp/receiver-v03-source.tar.gz --exclude=.gradle --exclude=build --exclude=*.jar -C kotlin-src .
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git switch --orphan receiver-kotlin-source-v02
-          cp -a kotlin-src/. ./
-          rm -rf kotlin-src
+          git switch --orphan receiver-kotlin-source-v03
+          find . -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
+          tar -xzf /tmp/receiver-v03-source.tar.gz
+          rm -rf .github/workflows
           git add -A
-          git commit -m "Publish Satellite World TV Kotlin receiver source v0.2"
-          git push origin HEAD:refs/heads/receiver-kotlin-source-v02
+          git commit -m "Publish Kotlin receiver application source v0.3"
+          git push origin HEAD:refs/heads/receiver-kotlin-source-v03
