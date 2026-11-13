@@ -1,4 +1,4 @@
-name: Satellite World TV - Build APK
+name: Satellite World TV - Kotlin APK
 on:
   push:
     branches: [satellite-world-tv]
@@ -7,33 +7,55 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
     steps:
       - uses: actions/checkout@v4
-      - name: Set up JDK 17
+      - name: Extract enhanced Android project
+        run: |
+          mkdir -p kotlin-src
+          tar -xJf satellite-kotlin-v02.tar.xz -C kotlin-src
+          test -f kotlin-src/app/build.gradle.kts
+          test -f kotlin-src/app/src/main/java/com/satelliteworld/tv/MainActivity.kt
+      - name: Setup JDK 17
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
-      - name: Use runner Android SDK
+      - name: Set up Android SDK platform
         shell: bash
         run: |
-          echo "ANDROID_HOME=${ANDROID_HOME}"
-          echo "ANDROID_SDK_ROOT=${ANDROID_SDK_ROOT}"
+          set -eu
           SDKMANAGER="$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager | head -n 1)"
-          if [ -z "$SDKMANAGER" ]; then echo "Android SDK manager unavailable"; exit 1; fi
-          echo "Using $SDKMANAGER"
+          if [ -z "$SDKMANAGER" ]; then echo "sdkmanager not found"; exit 1; fi
           yes | "$SDKMANAGER" --licenses > /dev/null || true
           "$SDKMANAGER" --install 'platforms;android-35' 'build-tools;35.0.0'
-      - name: Set up Gradle
+      - name: Setup Gradle 8.9
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.9'
-      - name: Build Debug APK
+      - name: Kotlin parser / unit tests
+        working-directory: kotlin-src
+        run: gradle :app:testDebugUnitTest --no-daemon --stacktrace
+      - name: Compile and sign debug APK
+        working-directory: kotlin-src
         run: gradle :app:assembleDebug --no-daemon --stacktrace
-      - name: Upload APK
+      - name: Upload installable APK
         uses: actions/upload-artifact@v4
         with:
-          name: SatelliteWorldTV-debug-apk
-          path: app/build/outputs/apk/debug/app-debug.apk
+          name: SatelliteWorldTV-Kotlin-v0.2-debug-apk
+          path: kotlin-src/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
+          retention-days: 60
+      - name: Export browsable Kotlin source branch
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -eu
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch --orphan receiver-kotlin-source-v02
+          cp -a kotlin-src/. ./
+          rm -rf kotlin-src
+          git add -A
+          git commit -m "Publish Satellite World TV Kotlin receiver source v0.2"
+          git push origin HEAD:refs/heads/receiver-kotlin-source-v02

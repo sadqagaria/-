@@ -1,14 +1,7 @@
-# Satellite World TV — Android APK
+# Satellite World TV — Kotlin Receiver Build
 
-This branch contains an original Android Java/Media3 receiver-style MVP created for this account. It does not change the repository's default branch.
+Android IPTV/radio receiver branch for the connected user. This branch builds a Kotlin + Jetpack Compose + Media3 application from the tagged source tarball \`satellite-kotlin-v02.tar.xz\` using GitHub Actions. No modifications are made to \`main\`.
 
-- Internet TV directory: https://github.com/iptv-org/iptv (public M3U listing).
-- Internet radio directory: https://github.com/eyalev/verified-radio-streams (public M3U listing).
-- Country/category filters, search, favorites, channel numbers, next/previous, import a local M3U file, cached playlists.
-- Plays HTTP(S) media via AndroidX Media3 including HLS/DASH when supported.
-- Public listings do not imply content licensing, guaranteed access, or working streams.
-- Satellite names are *filters only*: a satellite DVB frequency does not imply internet streaming.
+[Build workflow](https://github.com/sadqagaria/-/actions/workflows/build-apk.yml) | [Latest builds](https://github.com/sadqagaria/-/actions?query=branch%3Asatellite-world-tv)
 
-**Build:** Actions > Satellite World TV - Build APK > run > Artifacts > SatelliteWorldTV-debug-apk > app-debug.apk.
-
-**Status:** Initial MVP. The earlier full Kotlin source bundle is separate; this branch exists specifically for APK production. It does not yet implement Enigma2 imports, EPG, assured 1000 channels per satellite, parental locks, or background radio service. App must be tested on an actual device.
+Kotlin source will be published on branch \`receiver-kotlin-source-v02\` after a successful build. These are publicly indexed M3U directories only, not rights-verified rebroadcast permissions. Matching Nilesat/Arabsat/Hot Bird service orders requires importing the user's receiver list.
