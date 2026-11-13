@@ -18,6 +18,23 @@ jobs:
           tar -xJf satellite-kotlin-v02.tar.xz -C kotlin-src
           xz -dc swt_v03_relative.diff.xz | patch -p1 --batch -d kotlin-src
           test -f kotlin-src/app/src/main/java/com/satelliteworld/tv/recording/HlsRecorder.kt
+      - name: Repair Kotlin compiler errors
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          root=Path('kotlin-src/app/src/main/java/com/satelliteworld/tv')
+          p=root/'MainActivity.kt'
+          s=p.read_text()
+          s=s.replace('private val recorder by lazy {', 'private val recorder: HlsRecorder by lazy {')
+          s=s.replace('recording = recorder.active', 'recording = message.contains("تسجيل جارٍ")')
+          s=s.replace('Regex("[^\\p{L}\\p{N}_-]")', 'Regex("[^\\\\p{L}\\\\p{N}_-]")')
+          p.write_text(s)
+          p=root/'recording/HlsRecorder.kt'
+          s=p.read_text().replace('val it=seen.iterator()', 'val iterator=seen.iterator()')
+          s=s.replace('if (it.hasNext()) {it.next();it.remove()}', 'if (iterator.hasNext()) {iterator.next();iterator.remove()}')
+          p.write_text(s)
+          PY
       - name: Bundle Egypt channel metadata snapshot from GitHub
         shell: bash
         run: |
